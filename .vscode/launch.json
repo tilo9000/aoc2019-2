@@ -8,7 +8,7 @@
             "name": "(Windows) Starten",
             "type": "cppvsdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/target/debug/aoc2019-1.exe",
+            "program": "${workspaceFolder}/target/debug/aoc2019-2.exe",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
