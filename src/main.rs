@@ -2,7 +2,7 @@ use std::error::Error;
 use std::fs;
 use std::process;
 
-const PART_1_RESULT: usize = 3409710;
+// const PART_1_RESULT: usize = 3409710;
 const PART_2_RESULT: usize = 19690720;
 
 fn main() {
@@ -50,27 +50,24 @@ impl Memory {
         }
     }
 
-    pub fn dump(&self) {
-        let mut pos: usize = 0;
-        loop {
-            for i in 0..4 {
-                print!("{:>7}|", &self.get(pos + i))
-            }
-            println!();
-            pos += 4;
-            if pos > self.data.len() {
-                break;
-            }
-        }
-    }
+    // pub fn dump(&self) {
+    //     let mut pos: usize = 0;
+    //     loop {
+    //         for i in 0..4 {
+    //             print!("{:>7}|", &self.get(pos + i))
+    //         }
+    //         println!();
+    //         pos += 4;
+    //         if pos > self.data.len() {
+    //             break;
+    //         }
+    //     }
+    // }
 }
 
 fn run(filename: &str, target: usize) -> Result<(usize, usize, usize), Box<dyn Error>> {
     let contents = fs::read_to_string(filename)?;
-    let mut result: usize = 0;
-    let mut start1: usize = 12;
-    let mut start2: usize = 1;
-
+ 
     for start1 in 0..100 {
         for start2 in 0..100 {
             let mut mem = Memory::new(&[]);
@@ -81,7 +78,7 @@ fn run(filename: &str, target: usize) -> Result<(usize, usize, usize), Box<dyn E
                 mem.push(m);
             }
 
-            result = exec_with_start(mem, start1, start2);
+            let result = exec_with_start(mem, start1, start2);
             // println!("{:>8} {:>8} {:>8}", result, start1, start2);
             if result == target {
                 return Ok((result, start1, start2));
