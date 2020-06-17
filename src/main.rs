@@ -2,9 +2,12 @@ use std::error::Error;
 use std::fs;
 use std::process;
 
+const PART_1_RESULT: usize = 3409710;
+const PART_2_RESULT: usize = 19690720;
+
 fn main() {
-    match run("input.txt") {
-        Ok(t) => println!("Memory Cell 0: {}", t),
+    match run("input.txt", PART_2_RESULT) {
+        Ok(t) => println!("Memory Cell 0: {} with {} and {}", t.0, t.1, t.2),
         Err(e) => {
             println!("Application error: {}", e);
             process::exit(1)
@@ -62,34 +65,38 @@ impl Memory {
     }
 }
 
-fn run(filename: &str) -> Result<usize, Box<dyn Error>> {
+fn run(filename: &str, target: usize) -> Result<(usize, usize, usize), Box<dyn Error>> {
     let contents = fs::read_to_string(filename)?;
-    let mut m: usize;
-    let mut mem = Memory::new(&[]);
+    let mut result: usize = 0;
+    let mut start1: usize = 12;
+    let mut start2: usize = 1;
 
-    for code in contents.split(',') {
-        m = code.trim().parse().unwrap();
-        mem.push(m);
+    for start1 in 0..100 {
+        for start2 in 0..100 {
+            let mut mem = Memory::new(&[]);
+            let mut m: usize;
+
+            for code in contents.split(',') {
+                m = code.trim().parse().unwrap();
+                mem.push(m);
+            }
+
+            result = exec_with_start(mem, start1, start2);
+            // println!("{:>8} {:>8} {:>8}", result, start1, start2);
+            if result == target {
+                return Ok((result, start1, start2));
+            }
+        }
     }
+    // if we end up here, we did not find it
+    Ok((0, 0, 0))
+}
 
-    mem.dump();
-
-    // Once you have a working computer, 
-    // the first step is to restore the gravity assist program
-    // (your puzzle input) to the "1202 program alarm" state 
-    // it had just before the last computer caught fire. 
-    // To do this, before running the program, 
-    // replace position 1 with the value 12 and 
-    // replace position 2 with the value 2. 
-    // What value is left at position 0 after the program halts?
-    mem.put(1, 12);
-    mem.put(2, 2);
-
-    let changed_mem = exec(mem);
-
-    changed_mem.dump();
-
-    Ok(changed_mem.get(0))
+fn exec_with_start(mut mem: Memory, start1: usize, start2: usize) -> usize {
+    // set the starting values
+    mem.put(1, start1);
+    mem.put(2, start2);
+    exec(mem).get(0)
 }
 
 fn exec(mut mem: Memory) -> Memory {
@@ -105,35 +112,21 @@ fn exec(mut mem: Memory) -> Memory {
         opcode = mem.get(pc);
         match opcode {
             ADD => {
-                println!(
-                    "{}, {}, {}, {}",
-                    opcode,
-                    mem.get(pc + 1),
-                    mem.get(pc + 2),
-                    mem.get(pc + 3)
-                );
                 let op1 = mem.get(mem.get(pc + 1));
                 let op2 = mem.get(mem.get(pc + 2));
                 let res = op1 + op2;
-                println!("{:>5}: ADD [{}], [{}] --> {}", pc, op1, op2, res);
+                //println!("{:>5}: ADD [{}], [{}] --> {}", pc, op1, op2, res);
                 mem.put(mem.get(pc + 3), res)
             }
             MUL => {
-                println!(
-                    "{}, {}, {}, {}",
-                    opcode,
-                    mem.get(pc + 1),
-                    mem.get(pc + 2),
-                    mem.get(pc + 3)
-                );
                 let op1 = mem.get(mem.get(pc + 1));
                 let op2 = mem.get(mem.get(pc + 2));
                 let res = op1 * op2;
-                println!("{:>5}: MUL [{}], [{}] --> {}", pc, op1, op2, res);
+                //println!("{:>5}: MUL [{}], [{}] --> {}", pc, op1, op2, res);
                 mem.put(mem.get(pc + 3), res)
             }
             END => {
-                println!("{:>5}: END", pc);
+                //println!("{:>5}: END", pc);
                 break;
             }
             _ => println!("ERROR: UNKNOWN OPCODE {} at position {}", opcode, pc),
