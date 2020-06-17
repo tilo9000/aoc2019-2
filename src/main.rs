@@ -57,12 +57,10 @@ fn run(filename: &str) -> Result<usize, Box<dyn Error>> {
     let mut m: usize;
     let mut mem = Memory::new(&[]);
 
-    let mut i: usize = 0;
-    for code in contents.split(',') {
+    for (i, code) in contents.split(',').enumerate() {
         m = code.trim().parse().unwrap();
         println!("{} -> {}", i, m);
         mem.push(m);
-        i += 1;
     }
 
     let changed_mem = exec(mem);
@@ -71,8 +69,15 @@ fn run(filename: &str) -> Result<usize, Box<dyn Error>> {
 }
 
 fn exec(mut mem: Memory) -> Memory {
-    mem
 
+    let pc: usize = 0;  // program counter
+
+
+
+
+
+    mem.put(0,9); // Simulate a change
+    mem
 }
 
 #[cfg(test)]
